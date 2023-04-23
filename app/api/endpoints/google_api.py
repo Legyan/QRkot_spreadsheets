@@ -13,7 +13,7 @@ from app.services.google_api import (
 router = APIRouter()
 
 
-@router.post(
+@router.get(
     '/',
     dependencies=[Depends(current_superuser)],
 )

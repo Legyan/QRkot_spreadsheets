@@ -8,6 +8,8 @@ QRKot - это API для сбора средств, разработанное 
 
 Пользователи могут делать ненаправленные пожертвования и сопровождать их комментарием. Пожертвования делаются в фонд, а не в конкретный проект. Каждое полученное пожертвование автоматически добавляется в первый открытый проект, который еще не набрал нужную сумму. Если пожертвование больше требуемой суммы или в фонде нет открытых проектов, оставшиеся средства будут ждать открытия следующего проекта.
 
+Администратор имеет возможность автоматически сформировать отчёт в Google spreadsheets с перечнем профининсированных проектов.
+
 Примеры запросов к API, варианты ответов и ошибок приведены в спецификации openapi.yml.
 
 ### Стек технологий 
@@ -16,6 +18,7 @@ QRKot - это API для сбора средств, разработанное 
 ![](https://img.shields.io/badge/FastAPI-0.78.0-black?style=flat&logo=fastapi)
 ![](https://img.shields.io/badge/Pydantic-1.9.1-black?style=flat)
 ![](https://img.shields.io/badge/SQLAlchemy-1.4.29-black?style=flat)
+![](https://img.shields.io/badge/Aiogoogle-4.2.0-black?style=flat&logo=google)
 
 ### Запуск проекта
 
@@ -66,7 +69,22 @@ DATABASE_URL=sqlite+aiosqlite:///./fastapi.db
 SECRET=<YOUR_SECRET_WORD>
 FIRST_SUPERUSER_EMAIL=<SUPERUSER_EMAIL>
 FIRST_SUPERUSER_PASSWORD=<SUPERUSER_PASSWORD>
+# Переменные ниже необходимы для формирования отчёта и 
+# требуют наличия сервисного аккаунта Google Cloud Platform
+EMAIL=<USER_EMAIL>
+TYPE=service_account
+PROJECT_ID=<PROJECT_ID>
+PRIVATE_KEY_ID=<PRIVATE_KEY_ID>
+PRIVATE_KEY=<PRIVATE_KEY>
+CLIENT_EMAIL=<CLIENT_EMAIL>
+CLIENT_ID=<CLIENT_ID>
+AUTH_URI=https://accounts.google.com/o/oauth2/auth
+TOKEN_URI=https://oauth2.googleapis.com/token
+AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+CLIENT_X509_CERT_URL=<CLIENT_ID>
+
 ```
+
 Выполнить миграции:
 
 ```
@@ -181,5 +199,40 @@ GET /donation/my
     }
 ]
 ```
+
+#### Формирование отчёта в Google Spreadsheets:
+
+Запрос:
+```
+GET /google/
+```
+
+Ответ:
+```
+[
+  {
+    "full_amount": 3000,
+    "invested_amount": 3000,
+    "create_date": "2023-04-23T13:13:08.835727",
+    "name": "Постройка нового приюта",
+    "fully_invested": true,
+    "id": 2,
+    "close_date": "2023-04-23T13:14:08.854522",
+    "description": "Помощь в постройке нового дома для бездомных кошек"
+  },
+  {
+    "full_amount": 2500,
+    "invested_amount": 2500,
+    "create_date": "2023-04-23T12:34:47.340853",
+    "name": "Помощь ветеринарной клинике",
+    "fully_invested": true,
+    "id": 1,
+    "close_date": "2023-04-23T12:45:06.292735",
+    "description": "Сбор средств на покупку оборудования для ветеринарной клиники"
+  },
+]
+```
+
+После выполнения запроса установленному в .env Google аккаунту будет предоставлен доступ к сформированному отчёту в Google Spreadsheets. Ссылка на таблицу будет отправлена на почту.
 
 Полная документация API со всеми возможными запросами доступна на развёрнутом проекте по адресам [```http://localhost/api/docs/```](http://localhost/api/docs/) или [```http://localhost/api/redoc/```](http://localhost/api/redoc/).

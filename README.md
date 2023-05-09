@@ -8,7 +8,7 @@ QRKot - это API для сбора средств, разработанное 
 
 Пользователи могут делать ненаправленные пожертвования и сопровождать их комментарием. Пожертвования делаются в фонд, а не в конкретный проект. Каждое полученное пожертвование автоматически добавляется в первый открытый проект, который еще не набрал нужную сумму. Если пожертвование больше требуемой суммы или в фонде нет открытых проектов, оставшиеся средства будут ждать открытия следующего проекта.
 
-Администратор имеет возможность автоматически сформировать отчёт в Google spreadsheets с перечнем профининсированных проектов.
+Администратор имеет возможность автоматически сформировать отчёт в Google spreadsheets с перечнем профинансированных проектов.
 
 Примеры запросов к API, варианты ответов и ошибок приведены в спецификации openapi.yml.
 
@@ -22,17 +22,17 @@ QRKot - это API для сбора средств, разработанное 
 
 ### Запуск проекта
 
-Клонировать репозиторий и перейти в него в командной строке:
+1. Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone https://github.com/Legyan/cat_charity_fund.git
+git clone https://github.com/Legyan/QRkot_spreadsheets.git
 ```
 
 ```
-cd cat_charity_fund
+cd QRkot_spreadsheets
 ```
 
-Cоздать и активировать виртуальное окружение:
+2. Cоздать и активировать виртуальное окружение:
 
 ```
 python3 -m venv venv
@@ -50,7 +50,7 @@ python3 -m venv venv
     source venv/scripts/activate
     ```
 
-Установить зависимости из файла requirements.txt:
+3. Установить зависимости из файла requirements.txt:
 
 ```
 python3 -m pip install --upgrade pip
@@ -60,7 +60,11 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Создать в корневой директории файл .env и заполнить его:
+4. Создать в корневой директории файл .env и заполнить его:
+
+```
+nano .env
+```
 
 ```
 APP_TITLE=Кошачий благотворительный фонд
@@ -69,8 +73,9 @@ DATABASE_URL=sqlite+aiosqlite:///./fastapi.db
 SECRET=<YOUR_SECRET_WORD>
 FIRST_SUPERUSER_EMAIL=<SUPERUSER_EMAIL>
 FIRST_SUPERUSER_PASSWORD=<SUPERUSER_PASSWORD>
+
 # Переменные ниже необходимы для формирования отчёта и 
-# требуют наличия сервисного аккаунта Google Cloud Platform
+# требуют наличия сервисного аккаунта Google Cloud Platform.
 EMAIL=<USER_EMAIL>
 TYPE=service_account
 PROJECT_ID=<PROJECT_ID>
@@ -82,16 +87,15 @@ AUTH_URI=https://accounts.google.com/o/oauth2/auth
 TOKEN_URI=https://oauth2.googleapis.com/token
 AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
 CLIENT_X509_CERT_URL=<CLIENT_ID>
-
 ```
 
-Выполнить миграции:
+5. Выполнить миграции:
 
 ```
 alembic upgrade head
 ```
 
-Запустить приложение:
+6. Запустить приложение:
 
 ```
 uvicorn app.main:app
@@ -103,7 +107,7 @@ uvicorn app.main:app
 
 Запрос:
 ```
-GET /charity_project/
+GET /charity_project
 ```
 
 Ответ:
@@ -130,14 +134,13 @@ GET /charity_project/
       "fully_invested": false
     }
 ]
-
 ```
 
 #### Cоздание нового благотворительного проекта:
 
 Запрос:
 ```
-POST /charity_project/
+POST /charity_project
 {
   "name": "Помощь ветеринарной клинике",
   "description": "Сбор средств на покупку оборудования для ветеринарной клиники",
@@ -156,14 +159,13 @@ POST /charity_project/
     "create_date": "2023-04-08T17:47:37.460Z",
     "is_closed": false
 }
-
 ```
 
 #### Cоздание пожертвования:
 
 Запрос:
 ```
-POST /donation/
+POST /donation
 {
   "full_amount": 1500,
   "comment": "Спасите котиков!"
@@ -178,7 +180,6 @@ POST /donation/
     "comment": "Спасите котиков!",
     "create_date": "2023-04-08T17:51:13.382Z"
 }
-
 ```
 
 #### Получение списка всех пожертвований пользователя:
@@ -204,7 +205,7 @@ GET /donation/my
 
 Запрос:
 ```
-GET /google/
+GET /google
 ```
 
 Ответ:
